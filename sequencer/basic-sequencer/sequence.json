@@ -1,0 +1,140 @@
+{
+    "sequences": [
+        {
+            "sequence_name": "sequence0",
+            "steps_name": "steps0",
+            "channel": 12,
+            "divisor": 1,
+            "steps": [
+                {
+                    "note": "A3",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "A2",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "A3",
+                    "type": "NOTE_ON",
+                    "glide": true,
+                    "velocity": 127
+                },
+                {
+                    "note": "B3",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "A2",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "B3",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "C4",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "A2",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "D4",
+                    "type": "NOTE_ON",
+                    "glide": true,
+                    "velocity": 127
+                },
+                {
+                    "note": "E4",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "A2",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "E4",
+                    "type": "NOTE_ON",
+                    "glide": true,
+                    "velocity": 127
+                },
+                {
+                    "note": "D4",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "E4",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "C4",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "B3",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                }
+            ]
+        },
+        {
+            "sequence_name": "sequence1",
+            "steps_name": "steps1",
+            "channel": 2,
+            "divisor": 16,
+            "steps": [
+                {
+                    "note": "A2",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "B2",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "C3",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                },
+                {
+                    "note": "D3",
+                    "type": "NOTE_ON",
+                    "glide": false,
+                    "velocity": 127
+                }
+            ]
+        }
+    ]
+}

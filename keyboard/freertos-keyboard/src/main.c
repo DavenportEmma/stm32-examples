@@ -2,6 +2,7 @@
 #include "FreeRTOSConfig.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "tasks.h"
 #include "keyboard.h"
 #include "uart.h"
 
@@ -40,5 +41,12 @@ void setup() {
 }
 
 int main(void) {
+    setup();
 
+    xTaskCreate(key_scan_task, "key scan task", 2048, NULL, 1, NULL);
+    vTaskStartScheduler();
+
+    while(1) {
+        
+    }
 }

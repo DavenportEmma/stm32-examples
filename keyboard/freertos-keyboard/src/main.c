@@ -4,6 +4,7 @@
 #include "task.h"
 #include "tasks.h"
 #include "keyboard.h"
+#include "autoconf.h"
 #include "uart.h"
 
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
@@ -27,9 +28,9 @@ void setup() {
                     (2 << (ROW_INPUT_2_PIN * 2)) | (2 << (ROW_INPUT_3_PIN * 2)) |
                     (2 << (ROW_INPUT_4_PIN * 2)) | (2 << (ROW_INPUT_5_PIN * 2)) |
                     (2 << (ROW_INPUT_6_PIN * 2)) | (2 << (ROW_INPUT_7_PIN * 2));
-    
-    // initialise stlink uart
-    USART_Handler* u;
+
+    USART_Handler _u;
+    USART_Handler* u = &_u;
     u->uart = USART3;
     u->baud = 9600;
     u->gpio = GPIOD;
@@ -42,7 +43,6 @@ void setup() {
 
 int main(void) {
     setup();
-
     xTaskCreate(key_scan_task, "key scan task", 2048, NULL, 1, NULL);
     vTaskStartScheduler();
 

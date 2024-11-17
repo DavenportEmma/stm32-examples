@@ -68,11 +68,11 @@ void setup() {
     
 
     USART_Handler* u;
-    u->uart = STLINK_UART;
-    u->baud = CONFIG_STLINK_UART_BAUD;
+    u->uart = USART3;
+    u->baud = 9600;
     u->gpio = GPIOD;
-    u->tx_pin = CONFIG_STLINK_TX_PIN;
-    u->rx_pin = CONFIG_STLINK_RX_PIN;
+    u->tx_pin = 8;
+    u->rx_pin = 9;
     u->afr_reg = 1;
     u->rx_interrupts = 0;
     int flag = init_uart(u);
@@ -103,9 +103,9 @@ uint16_t readCol(uint32_t col) {
         if(keyVal != prevVal) {
             // if the current value and previous value are not the same
             if(keyVal == 0) {
-                send_uart(STLINK_UART, "falling edge\n\r", 14);
+                send_uart(USART3, "falling edge\n\r", 14);
             } else {
-                send_uart(STLINK_UART, "rising edge\n\r", 13);
+                send_uart(USART3, "rising edge\n\r", 13);
             }
         }
     }

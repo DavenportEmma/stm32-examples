@@ -12,7 +12,7 @@ void loadBit(int b) {
     GPIOD->ODR &= ~CLK;
 }
 
-uint16_t readCol(uint32_t col) {
+uint16_t readCol(uint32_t col, int colIndex) {
     // read gpioc input register
     int d = GPIOC->IDR;
     // iterate over each row
@@ -25,9 +25,10 @@ uint16_t readCol(uint32_t col) {
         if(keyVal != prevVal) {
             // if the current value and previous value are not the same
             if(keyVal == 0) {
-                send_uart(USART3, "falling edge\n\r", 14);
+                // send_uart(USART3, "falling edge\n\r", 14);
             } else {
-                send_uart(USART3, "rising edge\n\r", 13);
+                char msg[2] = {characterMap[colIndex+(i*16)], '\0'};
+                send_uart(USART3, msg, 2);
             }
         }
     }
@@ -36,11 +37,11 @@ uint16_t readCol(uint32_t col) {
 
 void scan(uint32_t m[COLS]) {
     loadBit(1);
-    m[0] = readCol(m[0]);
+    m[0] = readCol(m[0], 0);
     
     for(int i = 1; i < COLS; i++) {
         loadBit(0);
-        m[i] = readCol(m[i]);
+        m[i] = readCol(m[i], i);
     }
 
     clear();

@@ -2,11 +2,12 @@
 #define _KEYBOARD_H
 
 #include "stm32f722xx.h"
+#include "uart.h"
 /*
 shift register control pins
-DIN     PD7
-CLK     PD6
-CLR     PD5 active low
+DIN     PD7 orange
+CLK     PD6 bl  ue
+CLR     PD5 active low brown
 
 keyboard inputs
 PC3
@@ -43,9 +44,20 @@ const int ROW_LUT[8] = {
     ROW_INPUT_4_PIN, ROW_INPUT_5_PIN, ROW_INPUT_6_PIN, ROW_INPUT_7_PIN
 };
 
+char characterMap[128] = {
+    '1','2','3','4','5','6','7','8','9','0','-','=',' ',' ',' ',' ',
+    'q','w','e','r','t','y','u','i','o','p',' ',' ',' ',' ',' ',' ',
+    'a','s','d','f','g','h','j','k','l',';',' ',' ',' ',' ',' ',' ',
+    'z','x','c','v','b','n','m',',','.','/',' ',' ',' ',' ',' ',' ',
+    ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+    ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+    ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+    ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '
+};
+
 void scan(uint32_t m[COLS]);
 void clear();
 void loadBit(int b);
-uint16_t readCol(uint32_t col);
+uint16_t readCol(uint32_t col, int index);
 
 #endif

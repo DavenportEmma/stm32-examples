@@ -183,11 +183,12 @@ void init_gpio() {
 
 }
 
-int count = 0;
 int sample_rate = 44100;
 int f = 1000;
 float phase = 0;
 int amplitude = 0xFFF - 1;
+
+volatile int count = 0;
 
 int main(void) {
     init_dac();
@@ -203,17 +204,24 @@ int main(void) {
 }
 
 void TIM2_IRQHandler(void) {
-    if (TIM2_SR & (1 << 1)) {  // Check if CC1 interrupt flag is set
-        TIM2_SR &= ~(1 << 1);  // Clear the interrupt flag
-        
-        float x = 2*PI*(count+phase)/(sample_rate/f);
-        x = sinf(x);
-        uint32_t dac_value = (uint32_t)((x + 1.0) * 2047.5);
-        DAC_DHR12R1 = dac_value;
+    if (TIM2->SR & (1 << 1)) {  // Check if CC1 interrupt flag is set
+        TIM2->SR &= ~(1 << 1);  // Clear the interrupt flag
+
+        DAC1->DHR12R1 = sineLookupTable[count];
 
         count++;
-        if(count >= sample_rate) {
+        if(count > 1023) {
             count = 0;
         }
+        
+        // float x = 2*PI*(count+phase)/(sample_rate/f);
+        // x = sinf(x);
+        // uint32_t dac_value = (uint32_t)((x + 1.0) * 2047.5);
+        // DAC_DHR12R1 = dac_value;
+
+        // count++;
+        // if(count >= sample_rate) {
+        //     count = 0;
+        // }
     }
 }

@@ -31,7 +31,8 @@ void SPI_setup() {
     // SPI1->CR1 |= SPI_CR1_BR_2;
     SPI1->CR1 |= SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2;
     // SPI1->CR1 &= ~(SPI_CR1_CPOL | SPI_CR1_CPHA);
-    SPI1->CR2 |= SPI_CR2_DS_3 | SPI_CR2_DS_2 | SPI_CR2_DS_1 | SPI_CR2_DS_0; // 16-bit data size
+    SPI1->CR2 |= SPI_CR2_DS_2 | SPI_CR2_DS_1 | SPI_CR2_DS_0; // 8-bit data size
+    SPI1->CR2 |= SPI_CR2_FRXTH;
     // SPI1->CR2 |= SPI_CR2_RXNEIE;
     SPI1->CR1 |= SPI_CR1_SPE;
 
@@ -50,9 +51,9 @@ void UART_setup(USART_Handler* u) {
     init_uart(u);
 }
 
-void SPI_tx_rx(uint16_t byte, uint16_t* received) {
+void SPI_tx_rx(uint8_t byte, uint8_t* received) {
     while(!(SPI1->SR & SPI_SR_TXE)) {}
-    SPI1->DR = byte;
+    *(volatile uint8_t*)&SPI1->DR = byte;
     while(!(SPI1->SR & SPI_SR_RXNE)) {}
     *received = SPI1->DR;
 }
@@ -63,22 +64,26 @@ void main() {
     SPI_setup();
     UART_setup(&u);
 
-    uint16_t rx;
+    uint8_t rx;
     
     GPIOA->ODR &= ~(1 << 4);  // CS low
-    
-    char hex[2];
 
     // Send command but ignore its echo
-    SPI_tx_rx(0x9F00, &rx);
-    hex[1] = (char)rx;
-    hex[0] = rx >> 8;
-    send_uart(USART3, hex, 2);
+    SPI_tx_rx(0x9F, &rx);
+    send_uart(USART3, (char*)&rx, 1);
+    SPI_tx_rx(0x00, &rx);
+    send_uart(USART3, (char*)&rx, 1);
+    SPI_tx_rx(0x00, &rx);
+    send_uart(USART3, (char*)&rx, 1);
+    SPI_tx_rx(0x00, &rx);
+    send_uart(USART3, (char*)&rx, 1);
+    // hex[1] = (char)rx;
+    // hex[0] = rx >> 8;
 
-    SPI_tx_rx(0x0000, &rx);
-    hex[1] = (char)rx;
-    hex[0] = rx >> 8;
-    send_uart(USART3, hex, 2);
+    // SPI_tx_rx(0x0000, &rx);
+    // hex[1] = (char)rx;
+    // hex[0] = rx >> 8;
+    // send_uart(USART3, hex, 2);
     
     GPIOA->ODR |= (1 << 4);  // CS high
 

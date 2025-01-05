@@ -51,41 +51,34 @@ void UART_setup(USART_Handler* u) {
     init_uart(u);
 }
 
-void SPI_tx_rx(uint8_t byte, uint8_t* received) {
-    while(!(SPI1->SR & SPI_SR_TXE)) {}
-    *(volatile uint8_t*)&SPI1->DR = byte;
-    while(!(SPI1->SR & SPI_SR_RXNE)) {}
-    *received = SPI1->DR;
-}
+void SPI_tx_rx(uint8_t* tx, uint8_t* rx, int len) {
+    GPIOA->ODR &= ~(1 << 4);  // CS low
 
+    for(int i = 0; i < len; i++) {
+        while(!(SPI1->SR & SPI_SR_TXE)) {}
+        *(volatile uint8_t*)&SPI1->DR = tx[i];
+
+        while(!(SPI1->SR & SPI_SR_RXNE)) {}
+        rx[i] = SPI1->DR;
+
+    }
+
+    while(SPI1->SR & SPI_SR_BSY) {};
+    GPIOA->ODR |= (1 << 4);  // CS high
+}
 
 void main() {
     USART_Handler u;
     SPI_setup();
     UART_setup(&u);
 
-    uint8_t rx;
-    
-    GPIOA->ODR &= ~(1 << 4);  // CS low
+    uint8_t tx[] = {0x9F, 0x00, 0x00, 0x00};
+    uint8_t rx[4];
 
-    // Send command but ignore its echo
-    SPI_tx_rx(0x9F, &rx);
-    send_uart(USART3, (char*)&rx, 1);
-    SPI_tx_rx(0x00, &rx);
-    send_uart(USART3, (char*)&rx, 1);
-    SPI_tx_rx(0x00, &rx);
-    send_uart(USART3, (char*)&rx, 1);
-    SPI_tx_rx(0x00, &rx);
-    send_uart(USART3, (char*)&rx, 1);
-    // hex[1] = (char)rx;
-    // hex[0] = rx >> 8;
-
-    // SPI_tx_rx(0x0000, &rx);
-    // hex[1] = (char)rx;
-    // hex[0] = rx >> 8;
-    // send_uart(USART3, hex, 2);
+    SPI_tx_rx(tx, rx, 4);
+    send_uart(USART3, (char*)&rx, 4);
     
-    GPIOA->ODR |= (1 << 4);  // CS high
+
 
     while(1) {
     }

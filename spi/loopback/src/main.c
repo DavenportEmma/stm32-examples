@@ -34,7 +34,7 @@ void SPI_setup() {
     SPI3->CR2 |= SPI_CR2_RXNEIE;
     SPI3->CR1 |= SPI_CR1_SPE;
 
-    NVIC_EnableIRQ(SPI1_IRQn);
+    // NVIC_EnableIRQ(SPI1_IRQn);
     NVIC_EnableIRQ(SPI3_IRQn);
 }
 
@@ -61,6 +61,8 @@ void main() {
     int len = 4;
     for(int i = 0; i < len; i++) {
         while(!(SPI1->SR & SPI_SR_TXE)) {}
+        send_uart(USART3, "\n", 6);
+        send_uart(USART3, (char*)message[i], 1);
         SPI1->DR = message[i];
     }
 
@@ -70,14 +72,23 @@ void main() {
 }
 
 void SPI1_IRQHandler(void) {
-    
+    uint16_t r;
+    if (SPI1->SR & SPI_SR_RXNE) {
+        r = SPI1->DR;
+        r++;
+        char m = (char)r;
+        send_uart(USART3, (char*)&r, 2);
+    }  
 }
 
 void SPI3_IRQHandler(void) {
     uint16_t r;
     if (SPI3->SR & SPI_SR_RXNE) {
         r = SPI3->DR;
+        r++;
         char m = (char)r;
         send_uart(USART3, (char*)&r, 2);
+        while(!(SPI3->SR & SPI_SR_TXE)) {}
+        SPI3->DR = r;
     }
 }

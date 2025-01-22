@@ -3,10 +3,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "tasks.h"
-#include "setup.h"
-#include "spi.h"
-#include "uart.h"
 #include "midi.h"
+#include "setup.h"
 
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
     __disable_irq();

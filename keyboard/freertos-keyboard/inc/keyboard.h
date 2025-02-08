@@ -30,7 +30,7 @@ PC12
 #define COLS 16
 
 // pin numbers for each row
-#define ROW_INPUT_0_PIN 3
+#define ROW_INPUT_0_PIN 5
 #define ROW_INPUT_1_PIN 6
 #define ROW_INPUT_2_PIN 7
 #define ROW_INPUT_3_PIN 8

@@ -5,7 +5,6 @@
 #include "stm32f722xx.h"
 
 /*
-TODO
 
 simple keyboard diode matrix on breadboard to test input polling
     then move on to using encoder and decoder ICs

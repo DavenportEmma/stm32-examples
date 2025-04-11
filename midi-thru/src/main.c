@@ -9,6 +9,8 @@
 uint8_t buffer[3] = {0};
 volatile i = 0;
 
+MIDIChannel_t routing_channel = CHANNEL_11;
+
 int main(void) {
     USART_Handler u;
     u.uart = USART1;
@@ -28,7 +30,7 @@ int main(void) {
     while(1) {
         if(i >= 3) {
             MIDIStatus_t status = buffer[0] & 0xF0;
-            MIDIChannel_t channel = buffer[0] & 0x0F;
+            MIDIChannel_t channel = routing_channel;
             MIDINote_t note = buffer[1];
             uint8_t velocity = buffer[2];
 
@@ -36,6 +38,8 @@ int main(void) {
                 status, channel, note, velocity
             };
 
+            send_midi_note(USART1, &p);
+            
             i = 0;
         }
     }
@@ -45,7 +49,7 @@ void USART1_IRQHandler(void) {
     if(USART1->ISR & USART_ISR_RXNE) {
         while(USART1->ISR & USART_ISR_RXNE) {
             uint8_t d = USART1->RDR;
-            USART1->TDR = d;
+            // USART1->TDR = d;
             buffer[i] = d;
             i++;
             if(i >= 3) {

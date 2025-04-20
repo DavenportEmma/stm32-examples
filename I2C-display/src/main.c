@@ -36,6 +36,10 @@ int main(void) {
                 buf_index+=6;
                 break;
         }
+
+        if(buf_index > 1024) {
+            buf_index-=1024;
+        }
     }
 
     int f = display_ssd1306(d);

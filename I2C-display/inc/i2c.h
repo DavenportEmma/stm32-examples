@@ -13,5 +13,6 @@ void stop_i2c_tx();
 int check_nack_i2c();
 int send_byte_i2c(uint8_t address, uint8_t data);
 int send_i2c(uint8_t address, uint8_t* data, uint8_t len);
+void i2c_write_frame_buffer(uint8_t addr, uint8_t *buf, uint16_t len);
 
 #endif

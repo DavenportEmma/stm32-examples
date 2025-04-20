@@ -1,4 +1,5 @@
 #include "i2c.h"
+#include "stm32f722xx.h"
 
 // I2C_B_SCL    PF1     CN9_19      AF4
 // I2C_B_SDA    PF0     CN9_21      AF4
@@ -11,15 +12,20 @@ void init_i2c() {
     GPIOF->OSPEEDR |= 0xA;  // pf0 pf1 high speed
     GPIOF->PUPDR |= 0x5;    // pf0 pf1 pull up resistors
 
+    I2C2->CR2 &= ~(I2C_CR2_RD_WRN | I2C_CR2_START | I2C_CR2_STOP | I2C_CR2_NBYTES | I2C_CR2_SADD);
+
     RCC->APB1ENR |= (1 << 22);  // set i2c peripheral clock
-    I2C2->TIMINGR |= (3 << 28) | (4 << 20) | (2 << 16) | (0xC3 << 8) | 0xC7;
+    
+    I2C2->TIMINGR = 0x00B01A4B; // Presc=0x0, SCLDEL=0xB, SDADEL=0x1, SCLH=0x1A, SCLL=0x4B
+    // I2C2->TIMINGR = (3 << 28) | (4 << 20) | (2 << 16) | (0xC3 << 8) | 0xC7;
     I2C2->CR1 |= (1 << 0);  // set pe bit in cr1 register
 }
 
 int start_i2c_tx(uint8_t address, uint8_t len) {
+    I2C2->CR2 &= ~(I2C_CR2_SADD | I2C_CR2_NBYTES);
     I2C2->CR2 |= (address << 1);
-    I2C2->CR2 |= I2C_CR2_START;
     I2C2->CR2 |= (len << 16);
+    I2C2->CR2 |= I2C_CR2_START;
 
     while(!(I2C2->ISR & I2C_ISR_TXIS)) {
         if(I2C2->ISR & I2C_ISR_NACKF) {
@@ -27,6 +33,8 @@ int start_i2c_tx(uint8_t address, uint8_t len) {
             return 1;
         }
     }
+
+    return 0;
 }
 
 void stop_i2c_tx() {

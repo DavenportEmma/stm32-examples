@@ -1,14 +1,19 @@
 #include "ssd1306.h"
 #include "stm32f722xx.h"
 #include "i2c.h"
-
+#include <string.h>
 
 int command_ssd1306(uint8_t command) {
 	uint8_t sequence[] = { 0x00, command };
 	send_i2c(SSD1306_ADDR, sequence, 2);
+
+	return 0;
 }
 
 int display_ssd1306(uint8_t* buffer) {
+	command_ssd1306(SSD1306_MEMORYMODE);  // 0x20
+    command_ssd1306(0x00);
+	
 	command_ssd1306(SSD1306_PAGEADDR);
 	command_ssd1306(0);
 	command_ssd1306(0xFF);
@@ -16,7 +21,16 @@ int display_ssd1306(uint8_t* buffer) {
 	command_ssd1306(0);
 	command_ssd1306(WIDTH - 1);
 
+	uint8_t chunk[129];
+	
+	for(int i = 0; i < 8; i++) {
+		chunk[0] = 0x40;
+		memcpy(&chunk[1], &buffer[128 * i], 128);
 
+		send_i2c(SSD1306_ADDR, chunk, 129);
+	}
+
+	return 0;
 }
 
 int init_ssd1306() {
@@ -64,7 +78,8 @@ int init_ssd1306() {
   	command_ssd1306(SSD1306_NORMALDISPLAY);			// 0xA6
   	command_ssd1306(SSD1306_DEACTIVATE_SCROLL);		
   	command_ssd1306(SSD1306_DISPLAYON);				// / Main screen turn on
+
 	// command_ssd1306(SSD1306_DISPLAYALLON);
     
-	return 0;
+	return flag;
 }

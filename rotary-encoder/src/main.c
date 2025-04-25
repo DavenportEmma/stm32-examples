@@ -31,7 +31,7 @@ static void setup() {
 
     EXTI->IMR |= (EXTI_EMR_EM11 | EXTI_EMR_EM12);
     EXTI->RTSR |= (EXTI_RTSR_TR11 | EXTI_RTSR_TR12);
-    EXTI->FTSR |= (EXTI_FTSR_TR11 | EXTI_FTSR_TR12);
+    // EXTI->FTSR |= (EXTI_FTSR_TR11 | EXTI_FTSR_TR12);
 
     NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
@@ -53,24 +53,30 @@ static void uart_task() {
     //     vTaskDelay(pdMS_TO_TICKS(10));
     // }
 
-    int8_t step_accumulator = 0;
+    // int8_t step_accumulator = 0;
 
-    while (1) {
-        taskENTER_CRITICAL();
-        int8_t dir = direction;
-        direction = 0;
-        taskEXIT_CRITICAL();
+    // while (1) {
+    //     taskENTER_CRITICAL();
+    //     int8_t dir = direction;
+    //     direction = 0;
+    //     taskEXIT_CRITICAL();
 
-        step_accumulator += dir;
+    //     step_accumulator += dir;
 
-        if (step_accumulator >= 4) {
-            send_uart(USART3, "+\n\r", 3);
-            step_accumulator = 0;
-        } else if (step_accumulator <= -4) {
-            send_uart(USART3, "-\n\r", 3);
-            step_accumulator = 0;
-        }
+    //     if (step_accumulator >= 4) {
+    //         send_uart(USART3, "+\n\r", 3);
+    //         step_accumulator = 0;
+    //     } else if (step_accumulator <= -4) {
+    //         send_uart(USART3, "-\n\r", 3);
+    //         step_accumulator = 0;
+    //     }
 
+    //     vTaskDelay(pdMS_TO_TICKS(10));
+    // }
+
+    while(1) {
+        send_hex(USART3, direction);
+        send_uart(USART3, "\n\r", 2);
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
@@ -88,32 +94,44 @@ int main(void) {
 }
 
 void EXTI15_10_IRQHandler(void) {
-    volatile static uint8_t prev = 0;
+    // volatile static uint8_t prev = 0;
 
     if((EXTI->PR & (1 << 11)) || (EXTI->PR & (1 << 12))) {
         uint16_t pin11 = (GPIOA->IDR & (1 << 11)) ? 1 : 0;
         uint16_t pin12 = (GPIOA->IDR & (1 << 12)) ? 1 : 0;
+        // uint8_t state = (pin12 << 1) | pin11;
         
-        uint8_t state = (pin12 << 1) | pin11;
-        uint8_t transition = (prev << 2) | state;
+        // if(state == 1) {
+        //     direction++;
+        // } else if(state == 2) {
+        //     direction--;
+        // }
 
-        const int8_t direction_lookup[16] = {
-            0,  -1,   1,   0,
-            1,   0,   0,  -1,
-           -1,   0,   0,   1,
-            0,   1,  -1,   0
-        };
+        // uint8_t transition = (prev << 2) | state;
+
+        // const int8_t direction_lookup[16] = {
+        //     0,  -1,   1,   0,
+        //     1,   0,   0,  -1,
+        //    -1,   0,   0,   1,
+        //     0,   1,  -1,   0
+        // };
         
-        int8_t dir = direction_lookup[transition];
-        direction += dir;
+        // int8_t dir = direction_lookup[transition];
+        // direction += dir;
         
-        prev = state;
+        // prev = state;
 
         if(EXTI->PR & (1 << 11)) {
+            if(pin12) {
+                direction++;
+            }
             EXTI->PR |= (1 << 11);      // clear interrupt flag
         }
 
         if(EXTI->PR & (1 << 12)) {
+            if(pin11) {
+                direction--;
+            }
             EXTI->PR |= (1 << 12);      // clear interrupt flag
         }
         
